@@ -1,0 +1,11 @@
+.nav {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.logo {
+  font-family: var(--ff-slab-serif);
+  font-size: 2rem;
+  font-weight: 700;
+}
