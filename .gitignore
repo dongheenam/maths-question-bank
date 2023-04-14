@@ -3,7 +3,8 @@
 /.pnp
 .pnp.js
 
-# mongodb playground
+# VS Code
+.vscode/*
 *.mongodb.js
 
 # testing
@@ -35,3 +36,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel

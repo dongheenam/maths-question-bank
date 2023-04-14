@@ -1,11 +1,20 @@
 .nav {
+  padding: 0 1rem;
   display: flex;
   flex-direction: row;
+  place-items: center;
   gap: 1rem;
+
+  background: var(--primary3);
+}
+.check-login {
+  margin-left: auto;
 }
 
 .logo {
-  font-family: var(--ff-slab-serif);
+  font-family: var(--ff-serif);
   font-size: 2rem;
   font-weight: 700;
+  font-style: italic;
+  letter-spacing: -0.1em;
 }

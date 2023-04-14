@@ -77,8 +77,7 @@
   --ff-sans-serif: system-ui, sans-serif;
   --ff-serif: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052,
     serif;
-  --ff-slab-serif: Rockwell, 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif',
-    'Sitka Small', serif;
+  --ff-styled: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif;
   --ff-monospace: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo,
     Consolas, 'DejaVu Sans Mono', monospace;
 }
