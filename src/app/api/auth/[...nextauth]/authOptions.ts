@@ -28,5 +28,6 @@ const authOptions: NextAuthOptions = {
       tenantId: process.env.AZURE_AD_TENANT_ID,
     }),
   ],
+  debug: true,
 };
 export default authOptions;
