@@ -6,12 +6,7 @@ import LoginButton from './LoginButton';
 
 import styles from './Nav.module.css';
 
-type Props = {
-  session: Session | null;
-};
-export default function Nav({ session }: Props) {
-  console.log(session);
-
+export default function Nav() {
   return (
     <nav className={styles.nav}>
       <span className={styles.logo}>Maths QuestionBank</span>
