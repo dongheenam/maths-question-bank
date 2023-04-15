@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { Question } from '../types';
 
 type QuestionData = Omit<Question, '_id' | 'tags'> & {
@@ -22,11 +21,11 @@ export const postQuestion = async (
       solution,
     }),
   });
-  let data: { _id: ObjectId };
+  let data: { _id: string };
 
   if (!response.ok) {
     throw new Error("Server error, couldn't post question.");
   }
   data = await response.json();
-  return data._id.toHexString();
+  return data._id;
 };

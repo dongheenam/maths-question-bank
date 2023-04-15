@@ -31,6 +31,8 @@ const statusUpdater = (prev: FormStatus, next: Partial<FormStatus>) => {
     return { ...prev, ...next, loading: false };
   } else if ('created_id' in next) {
     return { ...prev, ...next, loading: false };
+  } else if ('loading' in next && next.loading === true) {
+    return { ...prev, ...next, error: null, created_id: null };
   } else {
     return { ...prev, ...next };
   }
@@ -38,7 +40,7 @@ const statusUpdater = (prev: FormStatus, next: Partial<FormStatus>) => {
 
 const QuestionForm = () => {
   const [formState, updateFormState] = useReducer(formUpdater, INITIAL_STATE);
-  const [formStatus, setFormStatus] = useReducer(statusUpdater, {
+  const [formStatus, updateFormStatus] = useReducer(statusUpdater, {
     loading: false,
     error: null,
     created_id: null,
@@ -46,6 +48,7 @@ const QuestionForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    updateFormStatus({ loading: true });
     const { tags } = formState;
     const uniqueTags = [...new Set(tags.map((tag) => tag.trim()))];
     try {
@@ -53,21 +56,25 @@ const QuestionForm = () => {
         throw new Error('Problem and solution cannot be empty!');
       }
 
+      console.log('sending form...');
       const _id = await postQuestion({ ...formState, tags: uniqueTags });
+      console.log('received response!');
       updateFormState({
         tags: [],
         problem: '',
         solution: '',
       });
-      setFormStatus({ created_id: _id });
+      updateFormStatus({ created_id: _id });
     } catch (error: any) {
       console.error('Error creating question:', error);
-      setFormStatus({ error: 'Error creating question - ' + error.message });
+      updateFormStatus({ error: 'Error creating question - ' + error.message });
     }
   };
 
   let statusMessage = '';
-  if (formStatus.error) {
+  if (formStatus.loading) {
+    statusMessage = 'Submitted! Waiting for response...';
+  } else if (formStatus.error) {
     statusMessage = formStatus.error;
   } else if (formStatus.created_id) {
     statusMessage = `Question created with id: ${formStatus.created_id}`;
