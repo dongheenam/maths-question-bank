@@ -25,7 +25,7 @@ export const postQuestion = async (
   let data: { _id: ObjectId };
 
   if (!response.ok) {
-    throw new Error("Couldn't create question...");
+    throw new Error("Server error, couldn't post question.");
   }
   data = await response.json();
   return data._id.toHexString();

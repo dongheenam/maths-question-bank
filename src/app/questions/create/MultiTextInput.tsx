@@ -29,29 +29,33 @@ const MultiTextInput = <T extends string>({ value, setValue }: Props<T>) => {
   return (
     <div>
       {value.map((item, index) => (
-        <label key={index}>
-          <span>{index}: </span>
-          <input
-            type="text"
-            value={item}
-            onChange={(e) => handleChange(index, e.target.value)}
-          />
+        <div key={index}>
+          <label>
+            <span>{index}: </span>
+            <input
+              type="text"
+              value={item}
+              onChange={(e) => handleChange(index, e.target.value)}
+            />
+          </label>
           <button type="button" onClick={() => handleDelete(index)}>
             X
           </button>
-        </label>
+        </div>
       ))}
-      <label>
-        <span>{value.length}: </span>
-        <input
-          type="text"
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
-        />
+      <div>
+        <label>
+          <span>{value.length}: </span>
+          <input
+            type="text"
+            value={newItem}
+            onChange={(e) => setNewItem(e.target.value)}
+          />
+        </label>
         <button type="button" onClick={handleAdd}>
           +
         </button>
-      </label>
+      </div>
     </div>
   );
 };

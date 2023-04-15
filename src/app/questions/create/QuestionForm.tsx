@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useState } from 'react';
+import { useReducer } from 'react';
 import { Question, TOPICS, Topic, YEAR_LEVELS, YearLevel } from '../types';
 import MultiTextInput from './MultiTextInput';
 import { postQuestion } from './apiCalls';
@@ -49,6 +49,10 @@ const QuestionForm = () => {
     const { tags } = formState;
     const uniqueTags = [...new Set(tags.map((tag) => tag.trim()))];
     try {
+      if (formState.problem.trim() === '' || formState.solution.trim() === '') {
+        throw new Error('Problem and solution cannot be empty!');
+      }
+
       const _id = await postQuestion({ ...formState, tags: uniqueTags });
       updateFormState({
         tags: [],
@@ -58,67 +62,80 @@ const QuestionForm = () => {
       setFormStatus({ created_id: _id });
     } catch (error: any) {
       console.error('Error creating question:', error);
-      setFormStatus({ error: error.message });
+      setFormStatus({ error: 'Error creating question - ' + error.message });
     }
   };
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        <span>Topic</span>
-        <select
-          value={formState.topic}
-          onChange={(e) => updateFormState({ topic: e.target.value as Topic })}
-        >
-          {TOPICS.map((topic) => (
-            <option key={topic} value={topic}>
-              {topic}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        <span>Year</span>
 
-        <select
-          value={formState.yearLevel}
-          onChange={(e) =>
-            updateFormState({ yearLevel: e.target.value as YearLevel })
-          }
-        >
-          {YEAR_LEVELS.map((yearLevel) => (
-            <option key={yearLevel} value={yearLevel}>
-              {yearLevel}
-            </option>
-          ))}
-        </select>
-      </label>
-      <div>
-        <span>Tags</span>
-        <MultiTextInput
-          value={formState.tags}
-          setValue={(value) => updateFormState({ tags: value })}
-        />
-      </div>
-      <div>
+  let statusMessage = '';
+  if (formStatus.error) {
+    statusMessage = formStatus.error;
+  } else if (formStatus.created_id) {
+    statusMessage = `Question created with id: ${formStatus.created_id}`;
+  } else {
+    statusMessage = 'Waiting for form submission...';
+  }
+  return (
+    <div>
+      <span>Form status: {statusMessage}</span>
+      <form onSubmit={handleSubmit}>
         <label>
-          <span>Problem</span>
-          <textarea
-            value={formState.problem}
-            onChange={(e) => updateFormState({ problem: e.target.value })}
-          />
+          <span>Topic</span>
+          <select
+            value={formState.topic}
+            onChange={(e) =>
+              updateFormState({ topic: e.target.value as Topic })
+            }
+          >
+            {TOPICS.map((topic) => (
+              <option key={topic} value={topic}>
+                {topic}
+              </option>
+            ))}
+          </select>
         </label>
-      </div>
-      <div>
         <label>
-          <span>Solution</span>
-          <textarea
-            value={formState.solution}
-            onChange={(e) => updateFormState({ solution: e.target.value })}
-          />
+          <span>Year</span>
+          <select
+            value={formState.yearLevel}
+            onChange={(e) =>
+              updateFormState({ yearLevel: e.target.value as YearLevel })
+            }
+          >
+            {YEAR_LEVELS.map((yearLevel) => (
+              <option key={yearLevel} value={yearLevel}>
+                {yearLevel}
+              </option>
+            ))}
+          </select>
         </label>
-      </div>
-      <button type="submit">Create Question</button>
-    </form>
+        <div>
+          <span>Tags</span>
+          <MultiTextInput
+            value={formState.tags}
+            setValue={(value) => updateFormState({ tags: value })}
+          />
+        </div>
+        <div>
+          <label>
+            <span>Problem</span>
+            <textarea
+              value={formState.problem}
+              onChange={(e) => updateFormState({ problem: e.target.value })}
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            <span>Solution</span>
+            <textarea
+              value={formState.solution}
+              onChange={(e) => updateFormState({ solution: e.target.value })}
+            />
+          </label>
+        </div>
+        <button type="submit">Create Question</button>
+      </form>
+    </div>
   );
 };
 export default QuestionForm;
