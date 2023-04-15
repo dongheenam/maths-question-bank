@@ -1,13 +1,19 @@
 'use client';
 
 import { useReducer } from 'react';
-import { Question, TOPICS, Topic, YEAR_LEVELS, YearLevel } from '../types';
+import {
+  Question,
+  TOPICS,
+  Topic,
+  YEAR_LEVELS,
+  YearLevel,
+  questionSchema,
+  trimQuestion,
+} from '../types';
 import MultiTextInput from './MultiTextInput';
 import { postQuestion } from './apiCalls';
 
-type FormState = Omit<Question, '_id' | 'tags'> & {
-  tags: string[];
-};
+type FormState = Omit<Question, '_id'>;
 const INITIAL_STATE: FormState = {
   topic: 'Number',
   yearLevel: '7',
@@ -15,9 +21,9 @@ const INITIAL_STATE: FormState = {
   problem: '',
   solution: '',
 };
+const partialFormSchema = questionSchema.partial();
 const formUpdater = (prev: FormState, next: Partial<FormState>) => {
-  const updates = { ...next };
-  // TODO: Validate updates
+  const updates = partialFormSchema.parse(next);
   return { ...prev, ...updates };
 };
 
@@ -27,11 +33,9 @@ type FormStatus = {
   created_id: string | null;
 };
 const statusUpdater = (prev: FormStatus, next: Partial<FormStatus>) => {
-  if ('error' in next) {
+  if ('error' in next || 'created_id' in next) {
     return { ...prev, ...next, loading: false };
-  } else if ('created_id' in next) {
-    return { ...prev, ...next, loading: false };
-  } else if ('loading' in next && next.loading === true) {
+  } else if (next.loading === true) {
     return { ...prev, ...next, error: null, created_id: null };
   } else {
     return { ...prev, ...next };
@@ -49,16 +53,17 @@ const QuestionForm = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     updateFormStatus({ loading: true });
-    const { tags } = formState;
-    const uniqueTags = [...new Set(tags.map((tag) => tag.trim()))];
-    try {
-      if (formState.problem.trim() === '' || formState.solution.trim() === '') {
-        throw new Error('Problem and solution cannot be empty!');
-      }
 
-      console.log('sending form...');
-      const _id = await postQuestion({ ...formState, tags: uniqueTags });
-      console.log('received response!');
+    try {
+      const questionData = questionSchema
+        .transform(trimQuestion)
+        .refine(
+          (question) => question.problem !== '' && question.solution !== '',
+          { message: 'Problem and solution cannot be empty!' }
+        )
+        .parse(formState);
+
+      const _id = await postQuestion(questionData);
       updateFormState({
         tags: [],
         problem: '',

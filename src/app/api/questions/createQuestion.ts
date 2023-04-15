@@ -1,5 +1,5 @@
 import { Question } from '@/app/questions/types';
-import client, { getCollection } from '@/common/mongoClient';
+import client, { getCollection } from '@/common/server/mongoClient';
 import { ObjectId } from 'mongodb';
 
 type QuestionData = Omit<Question, '_id'>;
@@ -12,7 +12,6 @@ const createQuestion = async (
   const session = client.startSession();
   try {
     await session.withTransaction(async () => {
-      console.log('started transaction');
       const { insertedId } = await getCollection(client, 'questions').insertOne(
         questionData
       );

@@ -1,8 +1,9 @@
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/pages/api/auth/utils';
+import { authOptions } from '@/common/server/authUtils';
 
 import createQuestion from './createQuestion';
 import { NextResponse } from 'next/server';
+import { questionSchema } from '@/app/questions/types';
 
 export async function POST(req: Request) {
   try {
@@ -12,20 +13,8 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { topic, yearLevel, tags, problem, solution } = body;
-    if (!topic || !yearLevel || !tags || !problem || !solution) {
-      throw new Error(
-        'Missing required fields in request body. Received: ' +
-          JSON.stringify(body)
-      );
-    }
-    const _id = await createQuestion({
-      topic,
-      yearLevel,
-      tags,
-      problem,
-      solution,
-    });
+    const questionData = questionSchema.parse(body);
+    const _id = await createQuestion(questionData);
     if (!_id) {
       throw new Error('Question is created, but returned a null ID.');
     }

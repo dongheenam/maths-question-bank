@@ -72,6 +72,37 @@ describe('QuestionForm', () => {
     );
   });
 
+  it("doesn't submit the form if there are validation errors", async () => {
+    const mockQuestion = {
+      topic: 'Number',
+      yearLevel: '7',
+      tags: [],
+      problem: 'What is 2 + 2?',
+      solution: '',
+    };
+
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock;
+
+    render(<QuestionForm />);
+    fireEvent.change(screen.getByLabelText(/problem/i), {
+      target: { value: mockQuestion.problem },
+    });
+    fireEvent.change(screen.getByLabelText(/solution/i), {
+      target: { value: mockQuestion.solution },
+    });
+    fireEvent.change(screen.getByLabelText(/topic/i), {
+      target: { value: mockQuestion.topic },
+    });
+    fireEvent.change(screen.getByLabelText(/year/i), {
+      target: { value: mockQuestion.yearLevel },
+    });
+    fireEvent.click(screen.getByText(/create question/i));
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(screen.getByText(/cannot be empty/i)).toBeTruthy();
+  });
+
   it('displays an error message if there is an issue with the server response', async () => {
     const mockQuestion = {
       topic: 'Number',

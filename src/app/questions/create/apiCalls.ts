@@ -1,8 +1,6 @@
 import { Question } from '../types';
 
-type QuestionData = Omit<Question, '_id' | 'tags'> & {
-  tags: string[];
-};
+type QuestionData = Omit<Question, '_id'>;
 
 export const postQuestion = async (
   questionData: QuestionData
@@ -21,11 +19,10 @@ export const postQuestion = async (
       solution,
     }),
   });
-  let data: { _id: string };
 
   if (!response.ok) {
     throw new Error("Server error, couldn't post question.");
   }
-  data = await response.json();
+  const data = (await response.json()) as { _id: string };
   return data._id;
 };

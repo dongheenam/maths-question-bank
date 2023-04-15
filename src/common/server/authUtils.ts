@@ -2,7 +2,7 @@ import { NextAuthOptions, getServerSession } from 'next-auth';
 import AzureADProvider from 'next-auth/providers/azure-ad';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 
-import client from '@/common/mongoClient';
+import client from '@/common/server/mongoClient';
 
 if (
   process.env.AZURE_AD_CLIENT_ID === undefined ||

@@ -1,4 +1,4 @@
-import { getAuthSession } from '@/pages/api/auth/utils';
+import { getAuthSession } from '@/common/server/authUtils';
 
 import Nav from './Nav';
 import AuthContext from './AuthContext';
