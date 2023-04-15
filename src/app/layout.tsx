@@ -1,5 +1,4 @@
-// import { getServerSession } from 'next-auth/next';
-// import { authOptions } from './api/auth/[...nextauth]/route';
+import { getAuthSession } from '@/pages/api/auth/utils';
 
 import Nav from './Nav';
 import AuthContext from './AuthContext';
@@ -17,16 +16,14 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // for now, get session details from client end
-  // see https://github.com/nextauthjs/next-auth/discussions/7062
-  // const session = await getServerSession(authOptions);
+  const session = await getAuthSession();
 
   return (
     <html>
       <body>
         <div id="root">
           <AuthContext>
-            <Nav />
+            <Nav session={session} />
             {children}
           </AuthContext>
         </div>

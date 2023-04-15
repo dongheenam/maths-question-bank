@@ -1,4 +1,4 @@
-import type { NextAuthOptions } from 'next-auth';
+import { NextAuthOptions, getServerSession } from 'next-auth';
 import AzureADProvider from 'next-auth/providers/azure-ad';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 
@@ -12,7 +12,8 @@ if (
   throw new Error('environment variables for auth not loaded!');
 }
 
-const authOptions: NextAuthOptions = {
+// Options for NextAuth
+export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(client.connect(), {
     collections: {
       Accounts: 'auth.accounts',
@@ -28,6 +29,7 @@ const authOptions: NextAuthOptions = {
       tenantId: process.env.AZURE_AD_TENANT_ID,
     }),
   ],
-  debug: true,
 };
-export default authOptions;
+
+// Returns Server session
+export const getAuthSession = async () => await getServerSession(authOptions);
