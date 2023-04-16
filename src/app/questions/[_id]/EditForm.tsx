@@ -1,6 +1,8 @@
 'use client';
 
-import { useReducer } from 'react';
+import { useReducer, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 import {
   Question,
   TOPICS,
@@ -8,47 +10,42 @@ import {
   YEAR_LEVELS,
   YearLevel,
   questionSchema,
-  trimQuestion,
 } from '../types';
-import MultiTextInput from './MultiTextInput';
-import { postQuestion } from './apiCalls';
-import Link from 'next/link';
+import MultiTextInput from '../create/MultiTextInput';
+import { patchQuestion } from '../create/apiCalls';
 
-type FormState = Omit<Question, '_id'>;
-const INITIAL_STATE: FormState = {
-  topic: 'Number',
-  yearLevel: '7',
-  tags: [],
-  problem: '',
-  solution: '',
+type Props = {
+  question: Question & { _id: string };
 };
+
 const partialFormSchema = questionSchema.partial();
-const formUpdater = (prev: FormState, next: Partial<FormState>) => {
+const formUpdater = (prev: Question, next: Partial<Question>) => {
   const updates = partialFormSchema.parse(next);
   return { ...prev, ...updates };
 };
 
 type FormStatus = {
+  opened: boolean;
   loading: boolean;
   error: string | null;
-  created_id: string | null;
 };
 const statusUpdater = (prev: FormStatus, next: Partial<FormStatus>) => {
-  if ('error' in next || 'created_id' in next) {
+  if ('error' in next) {
     return { ...prev, ...next, loading: false };
   } else if (next.loading === true) {
-    return { ...prev, ...next, error: null, created_id: null };
+    return { ...prev, ...next, error: null };
   } else {
     return { ...prev, ...next };
   }
 };
 
-const QuestionForm = () => {
-  const [formState, updateFormState] = useReducer(formUpdater, INITIAL_STATE);
+const EditForm = ({ question }: Props) => {
+  const router = useRouter();
+  const [formState, updateFormState] = useReducer(formUpdater, question);
   const [formStatus, updateFormStatus] = useReducer(statusUpdater, {
+    opened: false,
     loading: false,
     error: null,
-    created_id: null,
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -56,39 +53,38 @@ const QuestionForm = () => {
     updateFormStatus({ loading: true });
 
     try {
-      const questionData = questionSchema
-        .transform(trimQuestion)
-        .refine(
-          (question) => question.problem !== '' && question.solution !== '',
-          { message: 'Problem and solution cannot be empty!' }
-        )
-        .parse(formState);
+      const questionData = questionSchema.parse(formState);
+      await patchQuestion({ ...questionData, _id: question._id });
 
-      const _id = await postQuestion(questionData);
-      updateFormState({
-        tags: [],
-        problem: '',
-        solution: '',
-      });
-      updateFormStatus({ created_id: _id });
+      updateFormStatus({ loading: false });
+      updateFormStatus({ opened: false });
+      router.refresh();
     } catch (error: any) {
-      console.error('Error creating question:', error);
-      updateFormStatus({ error: 'Error creating question - ' + error.message });
+      updateFormStatus({ error: 'Error editing question - ' + error.message });
     }
   };
+
+  if (!formStatus.opened) {
+    return (
+      <button onClick={() => updateFormStatus({ opened: true })}>
+        Open form
+      </button>
+    );
+  }
 
   let statusMessage = '';
   if (formStatus.loading) {
     statusMessage = 'Submitted! Waiting for response...';
   } else if (formStatus.error) {
     statusMessage = formStatus.error;
-  } else if (formStatus.created_id) {
-    statusMessage = `Question created with id: ${formStatus.created_id}`;
   } else {
-    statusMessage = 'Waiting for form submission...';
+    statusMessage = 'Waiting for submission...';
   }
   return (
     <div>
+      <button onClick={() => updateFormStatus({ opened: false })}>
+        Close form
+      </button>
       <form onSubmit={handleSubmit}>
         <label>
           <span>Topic</span>
@@ -145,17 +141,10 @@ const QuestionForm = () => {
             />
           </label>
         </div>
-        <button type="submit">Create Question</button>
+        <button type="submit">Save</button>
       </form>
-      <div>
-        <span>Form status: {statusMessage} </span>
-        {formStatus.created_id && (
-          <Link href={`/questions/${formStatus.created_id}`}>
-            View question
-          </Link>
-        )}
-      </div>
+      <span>Form status: {statusMessage}</span>
     </div>
   );
 };
-export default QuestionForm;
+export default EditForm;

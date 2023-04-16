@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import type { Session } from 'next-auth';
 
-import LoginButton from './LoginButton';
-
 import styles from './Nav.module.css';
 
 type Props = {
@@ -17,7 +15,13 @@ export default function Nav({ session }: Props) {
       <div className={styles['check-login']}>
         {session ? `Hello, ${session.user?.name}` : 'not logged in!'}
       </div>
-      <LoginButton />
+      <div>
+        {session ? (
+          <Link href="/auth/signout">Sign out</Link>
+        ) : (
+          <Link href="/auth/signin">Sign in</Link>
+        )}
+      </div>
     </nav>
   );
 }

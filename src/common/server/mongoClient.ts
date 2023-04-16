@@ -1,4 +1,4 @@
-import { Document, MongoClient } from 'mongodb';
+import { Document, MongoClient, ObjectId } from 'mongodb';
 
 // ref: https://github.com/vercel/next.js/blob/canary/examples/with-mongodb/lib/mongodb.ts
 // ref: https://www.mongodb.com/docs/atlas/manage-connections-aws-lambda/
@@ -34,5 +34,6 @@ export const getCollection = <D extends Document>(
   client: MongoClient,
   collectionName: string
 ) => {
-  return client.db().collection<D>(collectionName);
+  type DocumentWithId = Omit<D, '_id'> & { _id?: ObjectId };
+  return client.db().collection<DocumentWithId>(collectionName);
 };

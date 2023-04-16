@@ -1,11 +1,13 @@
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/common/server/authUtils';
-
-import createQuestion from './createQuestion';
 import { NextResponse } from 'next/server';
+import { authOptions } from '@/common/server/authUtils';
 import { questionSchema } from '@/app/questions/types';
+import editQuestion from '../editQuestion';
 
-export async function POST(req: Request) {
+type Params = {
+  _id: string;
+};
+export async function PATCH(req: Request, { params }: { params: Params }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user?.name) {
@@ -16,14 +18,21 @@ export async function POST(req: Request) {
         { status: 401 }
       );
     }
+    const _id = params._id;
+    if (!_id) {
+      return NextResponse.json(
+        {
+          error: 'Question ID is required.',
+        },
+        { status: 400 }
+      );
+    }
 
     const body = await req.json();
     const questionData = questionSchema.parse(body);
-    const _id = await createQuestion(questionData);
-    if (!_id) {
-      throw new Error('Question is created, but returned a null ID.');
-    }
-    return NextResponse.json({ _id });
+    await editQuestion({ ...questionData, _id });
+
+    return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error(error);
     return NextResponse.json(
