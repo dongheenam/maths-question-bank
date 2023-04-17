@@ -17,9 +17,9 @@ export default function Nav({ session }: Props) {
       </div>
       <div>
         {session ? (
-          <Link href="/auth/signout">Sign out</Link>
+          <Link href="/api/auth/signout">Sign out</Link>
         ) : (
-          <Link href="/auth/signin">Sign in</Link>
+          <Link href="/api/auth/signin">Sign in</Link>
         )}
       </div>
     </nav>

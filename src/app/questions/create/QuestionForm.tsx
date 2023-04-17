@@ -10,7 +10,7 @@ import {
   questionSchema,
   trimQuestion,
 } from '../types';
-import MultiTextInput from './MultiTextInput';
+import MultiTextInput from '../../../common/components/MultiTextInput';
 import { postQuestion } from './apiCalls';
 import Link from 'next/link';
 

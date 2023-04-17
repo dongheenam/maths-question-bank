@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { RefObject, useRef, useState } from 'react';
 
 type Props<T extends string> = {
   value: T[];
@@ -8,6 +8,7 @@ type Props<T extends string> = {
 };
 const MultiTextInput = <T extends string>({ value, setValue }: Props<T>) => {
   const [newItem, setNewItem] = useState('');
+  const refs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleAdd = () => {
     if (newItem.trim()) {
@@ -25,6 +26,31 @@ const MultiTextInput = <T extends string>({ value, setValue }: Props<T>) => {
     newValue.splice(index, 1);
     setValue(newValue);
   };
+  const handleKeyPressDelete = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (event.key === 'Backspace' && event.currentTarget.value === '') {
+      event.preventDefault();
+      handleDelete(index);
+
+      // Move focus to the previous input when the current input is deleted
+      if (refs.current[index - 1]) {
+        (refs.current[index - 1] as HTMLInputElement).focus();
+      }
+    }
+  };
+  const handlePressEnter = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+    addNew: boolean
+  ) => {
+    if (event.key === 'Enter' && event.currentTarget.value.trim() !== '') {
+      event.preventDefault();
+      if (addNew) {
+        handleAdd();
+      }
+    }
+  };
 
   return (
     <div>
@@ -36,9 +62,20 @@ const MultiTextInput = <T extends string>({ value, setValue }: Props<T>) => {
               type="text"
               value={item}
               onChange={(e) => handleChange(index, e.target.value)}
+              onKeyDown={(e) => {
+                handleKeyPressDelete(e, index);
+                handlePressEnter(e, false);
+              }}
+              ref={(input) => {
+                refs.current[index] = input;
+              }}
             />
           </label>
-          <button type="button" onClick={() => handleDelete(index)}>
+          <button
+            type="button"
+            onClick={() => handleDelete(index)}
+            tabIndex={-1}
+          >
             X
           </button>
         </div>
@@ -50,9 +87,10 @@ const MultiTextInput = <T extends string>({ value, setValue }: Props<T>) => {
             type="text"
             value={newItem}
             onChange={(e) => setNewItem(e.target.value)}
+            onKeyDown={(e) => handlePressEnter(e, true)}
           />
         </label>
-        <button type="button" onClick={handleAdd}>
+        <button type="button" onClick={handleAdd} tabIndex={-1}>
           +
         </button>
       </div>

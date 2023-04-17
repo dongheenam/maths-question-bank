@@ -11,7 +11,7 @@ import {
   YearLevel,
   questionSchema,
 } from '../types';
-import MultiTextInput from '../create/MultiTextInput';
+import MultiTextInput from '../../../common/components/MultiTextInput';
 import { patchQuestion } from '../create/apiCalls';
 
 type Props = {
