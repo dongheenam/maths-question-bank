@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import Page from './page';
-import { Question } from '@/app/questions/types';
-import getQuestion from '@/app/api/questions/getQuestion';
 import { ObjectId } from 'mongodb';
 
 jest.mock('next/router', () => ({

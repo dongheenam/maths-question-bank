@@ -1,9 +1,12 @@
-import { Question } from '@/app/questions/types';
+import { QuestionServer } from '@/app/questions/types';
 import client, { getCollection } from '@/common/server/mongoClient';
 import { ObjectId } from 'mongodb';
 
 const getQuestion = async (_id: string) => {
-  const question = await getCollection<Question>(client, 'questions').findOne({
+  const question = await getCollection<QuestionServer>(
+    client,
+    'questions'
+  ).findOne({
     _id: new ObjectId(_id),
   });
   return question;

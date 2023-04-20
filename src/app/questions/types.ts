@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { z } from 'zod';
 
 export const TOPICS = [
@@ -17,7 +18,7 @@ const yearSchema = z.enum(YEAR_LEVELS);
 export type YearLevel = z.infer<typeof yearSchema>;
 
 export const questionSchema = z.object({
-  _id: z.string().optional(),
+  _id: z.string(),
   topic: topicSchema,
   yearLevel: yearSchema,
   tags: z.array(z.string()),
@@ -25,9 +26,22 @@ export const questionSchema = z.object({
   solution: z.string(),
 });
 export type Question = z.infer<typeof questionSchema>;
+export type QuestionServer = Omit<Question, '_id'> & { _id: ObjectId };
 export const trimQuestion = (question: Question): Question => ({
   ...question,
   tags: [...new Set(question.tags.map((tag) => tag.trim().toLowerCase()))],
   problem: question.problem.trim(),
   solution: question.solution.trim(),
 });
+
+export const questionQuerySchema = questionSchema
+  .pick({
+    topic: true,
+    yearLevel: true,
+    tags: true,
+  })
+  .extend({
+    text: z.string(),
+  })
+  .partial();
+export type QuestionQuery = z.infer<typeof questionQuerySchema>;

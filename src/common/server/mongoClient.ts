@@ -34,6 +34,5 @@ export const getCollection = <D extends Document>(
   client: MongoClient,
   collectionName: string
 ) => {
-  type DocumentWithId = Omit<D, '_id'> & { _id?: ObjectId };
-  return client.db().collection<DocumentWithId>(collectionName);
+  return client.db().collection<D>(collectionName);
 };
