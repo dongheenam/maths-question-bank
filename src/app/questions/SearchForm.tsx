@@ -13,14 +13,17 @@ import {
 import MultiTextInput from '@/common/components/MultiTextInput';
 import { z } from 'zod';
 
-const searchFormSchema = questionQuerySchema.required();
+const TOPIC_OPTIONS = ['', ...TOPICS] as const;
+const YEAR_LEVEL_OPTIONS = ['', ...YEAR_LEVELS] as const;
+const searchFormSchema = questionQuerySchema.required().extend({
+  topic: z.enum(TOPIC_OPTIONS),
+  yearLevel: z.enum(YEAR_LEVEL_OPTIONS),
+});
 type SearchFormState = z.infer<typeof searchFormSchema>;
-type Props = {
-  query: QuestionQuery;
-};
+
 const INITIAL_STATE: SearchFormState = {
-  topic: 'Number',
-  yearLevel: '7',
+  topic: '',
+  yearLevel: '',
   tags: [],
   text: '',
 };
@@ -33,6 +36,10 @@ const updater = (prev: SearchFormState, next: Partial<SearchFormState>) => {
     console.error(error);
     return prev;
   }
+};
+
+type Props = {
+  query: QuestionQuery;
 };
 
 const SearchForm = ({ query }: Props) => {
@@ -75,11 +82,11 @@ const SearchForm = ({ query }: Props) => {
           value={formState.topic}
           onChange={(e) =>
             updateFormState({
-              topic: e.target.value as Topic,
+              topic: (e.target.value as Topic) || '',
             })
           }
         >
-          {TOPICS.map((topic) => (
+          {TOPIC_OPTIONS.map((topic) => (
             <option key={topic} value={topic}>
               {topic}
             </option>
@@ -90,10 +97,12 @@ const SearchForm = ({ query }: Props) => {
           <select
             value={formState.yearLevel}
             onChange={(e) =>
-              updateFormState({ yearLevel: e.target.value as YearLevel })
+              updateFormState({
+                yearLevel: (e.target.value as YearLevel) || '',
+              })
             }
           >
-            {YEAR_LEVELS.map((yearLevel) => (
+            {YEAR_LEVEL_OPTIONS.map((yearLevel) => (
               <option key={yearLevel} value={yearLevel}>
                 {yearLevel}
               </option>

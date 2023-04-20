@@ -4,17 +4,23 @@ import { z } from 'zod';
 import SearchForm from './SearchForm';
 import queryQuestions from '../api/questions/queryQuestions';
 import { QuestionQuery, QuestionServer, questionQuerySchema } from './types';
+import { redirect } from 'next/navigation';
 
 type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
 const parseSearchParams = (searchParams: Props['searchParams']) => {
-  const { tags, ...query } = searchParams;
+  const { topic, yearLevel, tags, text } = searchParams;
+  const parsed: Props['searchParams'] = {};
+  if (topic) parsed.topic = topic;
+  if (yearLevel) parsed.yearLevel = yearLevel;
+  if (text) parsed.text = text;
   if (tags) {
-    query.tags = new Array(tags).flat();
+    // converts string | string[] to string[]
+    parsed.tags = new Array(tags).flat();
   }
-  return questionQuerySchema.parse(query);
+  return questionQuerySchema.parse(parsed);
 };
 
 export default async function Page({ searchParams }: Props) {
@@ -22,8 +28,11 @@ export default async function Page({ searchParams }: Props) {
   try {
     query = parseSearchParams(searchParams);
   } catch (error) {
-    if (error instanceof z.ZodError && Object.keys(searchParams).length > 0) {
+    if (error instanceof z.ZodError) {
       console.error(error);
+      if (Object.keys(searchParams).length > 0) {
+        redirect('/questions');
+      }
     }
   }
 
