@@ -2,6 +2,7 @@ import getQuestion from '@/app/api/questions/getQuestion';
 import { redirect } from 'next/navigation';
 import EditForm from './EditForm';
 import { toPlainDocument } from '@/common/server/utils';
+import Markdown from '@/common/components/Markdown';
 
 type Props = {
   params: { _id: string };
@@ -23,13 +24,10 @@ export default async function Page({ params }: Props) {
         <li>Tags: {question.tags.join(', ')}</li>
       </ul>
       <h2>Problem</h2>
-      <p>{question.problem}</p>
+      <Markdown text={question.problem} />
       <h2>Solution</h2>
-      <p>{question.solution}</p>
-      <h2>Edit question</h2>
+      <Markdown text={question.solution} />
       <EditForm question={toPlainDocument(question)} />
     </main>
   );
 }
-
-// export const revalidate = false;

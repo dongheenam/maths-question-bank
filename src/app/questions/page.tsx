@@ -5,6 +5,7 @@ import SearchForm from './SearchForm';
 import queryQuestions from '../api/questions/queryQuestions';
 import { QuestionQuery, QuestionServer, questionQuerySchema } from './types';
 import { redirect } from 'next/navigation';
+import Markdown from '@/common/components/Markdown';
 
 type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
@@ -51,7 +52,9 @@ export default async function Page({ searchParams }: Props) {
       <ul>
         {questions.map((question) => (
           <li key={question._id.toHexString()}>
-            <Link href={`/questions/${question._id}`}>{question.problem}</Link>
+            <Link href={`/questions/${question._id}`}>
+              <Markdown text={question.problem} />
+            </Link>
           </li>
         ))}
       </ul>

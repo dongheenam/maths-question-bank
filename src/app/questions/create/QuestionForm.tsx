@@ -13,6 +13,7 @@ import {
 import MultiTextInput from '../../../common/components/MultiTextInput';
 import { postQuestion } from './apiCalls';
 import Link from 'next/link';
+import MarkdownEdit from '@/common/components/MarkdownEdit';
 
 type FormState = Omit<Question, '_id'>;
 const INITIAL_STATE: FormState = {
@@ -130,18 +131,18 @@ const QuestionForm = () => {
         <div>
           <label>
             <span>Problem</span>
-            <textarea
-              value={formState.problem}
-              onChange={(e) => updateFormState({ problem: e.target.value })}
+            <MarkdownEdit
+              text={formState.problem}
+              setText={(next) => updateFormState({ problem: next })}
             />
           </label>
         </div>
         <div>
           <label>
             <span>Solution</span>
-            <textarea
-              value={formState.solution}
-              onChange={(e) => updateFormState({ solution: e.target.value })}
+            <MarkdownEdit
+              text={formState.solution}
+              setText={(next) => updateFormState({ solution: next })}
             />
           </label>
         </div>

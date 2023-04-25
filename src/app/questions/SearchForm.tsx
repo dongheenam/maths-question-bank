@@ -125,7 +125,6 @@ const SearchForm = ({ query }: Props) => {
         />
         <button type="submit">Search</button>
       </form>
-      <code>current state: {JSON.stringify(formState)}</code>
     </>
   );
 };

@@ -67,7 +67,7 @@ const EditForm = ({ question }: Props) => {
   if (!formStatus.opened) {
     return (
       <button onClick={() => updateFormStatus({ opened: true })}>
-        Open form
+        Edit question
       </button>
     );
   }
