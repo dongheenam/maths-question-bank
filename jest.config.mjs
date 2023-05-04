@@ -34,9 +34,12 @@ const config = {
 
     // Handle module aliases
     '^@/(.*)$': '<rootDir>/src/$1',
+
+    // React-markdown
+    'react-markdown':
+      '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
   },
   // Add more setup options before each test is run
-  // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
   testEnvironment: 'jsdom',
   transform: {
