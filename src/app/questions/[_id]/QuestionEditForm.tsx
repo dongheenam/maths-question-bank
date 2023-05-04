@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useState } from 'react';
+import { useReducer } from 'react';
 import { useRouter } from 'next/navigation';
 
 import {
@@ -12,7 +12,7 @@ import {
   questionSchema,
 } from '../types';
 import MultiTextInput from '../../../common/components/MultiTextInput';
-import { patchQuestion } from '../create/apiCalls';
+import { patchQuestion } from '../apiCalls';
 
 type Props = {
   question: Question & { _id: string };
@@ -56,8 +56,7 @@ const EditForm = ({ question }: Props) => {
       const questionData = questionSchema.parse(formState);
       await patchQuestion({ ...questionData, _id: question._id });
 
-      updateFormStatus({ loading: false });
-      updateFormStatus({ opened: false });
+      updateFormStatus({ loading: false, opened: false });
       router.refresh();
     } catch (error: any) {
       updateFormStatus({ error: 'Error editing question - ' + error.message });
@@ -116,6 +115,14 @@ const EditForm = ({ question }: Props) => {
             ))}
           </select>
         </label>
+        <label>
+          <span>Extension</span>
+          <input
+            type="checkbox"
+            checked={formState.isExtension}
+            onChange={(e) => updateFormState({ isExtension: e.target.checked })}
+          />
+        </label>
         <div>
           <span>Tags</span>
           <MultiTextInput
@@ -141,7 +148,17 @@ const EditForm = ({ question }: Props) => {
             />
           </label>
         </div>
-        <button type="submit">Save</button>
+        <label>
+          <span>Reference</span>
+          <input
+            type="text"
+            value={formState.reference}
+            onChange={(e) => updateFormState({ reference: e.target.value })}
+          />
+        </label>
+        <div>
+          <button type="submit">Save</button>
+        </div>
       </form>
       <span>Form status: {statusMessage}</span>
     </div>

@@ -12,8 +12,8 @@ type Props = {
 };
 
 const parseSearchParams = (searchParams: Props['searchParams']) => {
-  const { topic, yearLevel, tags, text } = searchParams;
-  const parsed: Props['searchParams'] = {};
+  const { topic, yearLevel, tags, text, isExtension } = searchParams;
+  const parsed: Props['searchParams'] & { isExtension?: boolean } = {};
   if (topic) parsed.topic = topic;
   if (yearLevel) parsed.yearLevel = yearLevel;
   if (text) parsed.text = text;
@@ -21,6 +21,7 @@ const parseSearchParams = (searchParams: Props['searchParams']) => {
     // converts string | string[] to string[]
     parsed.tags = new Array(tags).flat();
   }
+  parsed.isExtension = isExtension === 'true';
   return questionQuerySchema.parse(parsed);
 };
 

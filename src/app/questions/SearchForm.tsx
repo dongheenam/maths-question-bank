@@ -2,6 +2,7 @@
 
 import { useReducer } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { z } from 'zod';
 import {
   QuestionQuery,
   TOPICS,
@@ -11,7 +12,6 @@ import {
   questionQuerySchema,
 } from './types';
 import MultiTextInput from '@/common/components/MultiTextInput';
-import { z } from 'zod';
 
 const TOPIC_OPTIONS = ['', ...TOPICS] as const;
 const YEAR_LEVEL_OPTIONS = ['', ...YEAR_LEVELS] as const;
@@ -24,6 +24,7 @@ type SearchFormState = z.infer<typeof searchFormSchema>;
 const INITIAL_STATE: SearchFormState = {
   topic: '',
   yearLevel: '',
+  isExtension: false,
   tags: [],
   text: '',
 };
@@ -62,8 +63,11 @@ const SearchForm = ({ query }: Props) => {
         }))
         .parse(formState);
 
-      const { tags: tagQuery, ...rest } = searchQuery;
-      const searchParams = new URLSearchParams(rest);
+      const { tags: tagQuery, isExtension, ...rest } = searchQuery;
+      const searchParams = new URLSearchParams({
+        isExtension: isExtension ? 'true' : 'false',
+        ...rest,
+      });
       for (const tag of tagQuery) {
         searchParams.append('tags', tag);
       }
@@ -108,6 +112,14 @@ const SearchForm = ({ query }: Props) => {
               </option>
             ))}
           </select>
+        </label>
+        <label>
+          <span>Extension only</span>
+          <input
+            type="checkbox"
+            checked={formState.isExtension}
+            onChange={(e) => updateFormState({ isExtension: e.target.checked })}
+          />
         </label>
         <div>
           <span>Tags</span>

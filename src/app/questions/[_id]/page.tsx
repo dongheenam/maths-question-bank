@@ -1,6 +1,6 @@
 import getQuestion from '@/app/api/questions/getQuestion';
 import { redirect } from 'next/navigation';
-import EditForm from './EditForm';
+import QuestionEditForm from './QuestionEditForm';
 import { toPlainDocument } from '@/common/server/utils';
 import Markdown from '@/common/components/Markdown';
 
@@ -21,13 +21,15 @@ export default async function Page({ params }: Props) {
       <ul>
         <li>Topic: {question.topic}</li>
         <li>Year: {question.yearLevel}</li>
+        <li>Extension: {question.isExtension ? 'yes' : 'no'}</li>
         <li>Tags: {question.tags.join(', ')}</li>
+        <li>Reference: {question.reference}</li>
       </ul>
       <h2>Problem</h2>
       <Markdown text={question.problem} />
       <h2>Solution</h2>
       <Markdown text={question.solution} />
-      <EditForm question={toPlainDocument(question)} />
+      <QuestionEditForm question={toPlainDocument(question)} />
     </main>
   );
 }

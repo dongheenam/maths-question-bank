@@ -8,7 +8,8 @@ import {
 import client, { getCollection } from '@/common/server/mongoClient';
 
 const queryQuestions = async (query: QuestionQuery) => {
-  const { topic, yearLevel, tags, text } = questionQuerySchema.parse(query);
+  const { topic, yearLevel, tags, text, isExtension } =
+    questionQuerySchema.parse(query);
   const questionsCollection = getCollection<QuestionServer>(
     client,
     'questions'
@@ -20,6 +21,9 @@ const queryQuestions = async (query: QuestionQuery) => {
   }
   if (yearLevel) {
     filter.yearLevel = yearLevel;
+  }
+  if (isExtension) {
+    filter.isExtension = isExtension;
   }
   if (tags) {
     filter.tags = { $in: tags };

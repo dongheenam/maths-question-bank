@@ -24,7 +24,11 @@ export const questionSchema = z.object({
   tags: z.array(z.string()),
   problem: z.string(),
   solution: z.string(),
+  reference: z.string(),
+  isExtension: z.boolean(),
 });
+// question fetched from MongoDB has an _id field of type ObjectId
+// which cannot be used client-side
 export type Question = z.infer<typeof questionSchema>;
 export type QuestionServer = Omit<Question, '_id'> & { _id: ObjectId };
 export const trimQuestion = (question: Question): Question => ({
@@ -39,6 +43,7 @@ export const questionQuerySchema = questionSchema
     topic: true,
     yearLevel: true,
     tags: true,
+    isExtension: true,
   })
   .extend({
     text: z.string(),

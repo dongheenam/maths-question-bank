@@ -1,11 +1,12 @@
-import { Question } from '../types';
+import { Question } from './types';
 
 type PostQuestionData = Omit<Question, '_id'>;
 
 export const postQuestion = async (
   questionData: PostQuestionData
 ): Promise<string> => {
-  const { topic, yearLevel, tags, problem, solution } = questionData;
+  const { topic, yearLevel, tags, problem, solution, reference, isExtension } =
+    questionData;
   const response = await fetch('/api/questions', {
     method: 'POST',
     headers: {
@@ -17,6 +18,8 @@ export const postQuestion = async (
       tags,
       problem,
       solution,
+      reference,
+      isExtension,
     }),
   });
 
@@ -32,7 +35,16 @@ type PatchQuestionData = Required<Question>;
 export const patchQuestion = async (
   questionData: PatchQuestionData
 ): Promise<void> => {
-  const { _id, topic, yearLevel, tags, problem, solution } = questionData;
+  const {
+    _id,
+    topic,
+    yearLevel,
+    tags,
+    problem,
+    solution,
+    isExtension,
+    reference,
+  } = questionData;
   const response = await fetch(`/api/questions/${_id}`, {
     method: 'PATCH',
     headers: {
@@ -44,6 +56,8 @@ export const patchQuestion = async (
       tags,
       problem,
       solution,
+      isExtension,
+      reference,
     }),
   });
 

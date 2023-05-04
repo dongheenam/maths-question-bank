@@ -24,7 +24,7 @@ const MarkdownEdit = ({ text, setText }: Props) => {
       <button
         type="button"
         tabIndex={-1}
-        onClick={() => setEditMode(!editMode)}
+        onClick={() => setEditMode((prev) => !prev)}
       >
         {editMode ? 'Preview' : 'Edit'}
       </button>

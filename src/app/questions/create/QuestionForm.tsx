@@ -1,6 +1,7 @@
 'use client';
 
 import { useReducer } from 'react';
+import Link from 'next/link';
 import {
   Question,
   TOPICS,
@@ -10,9 +11,8 @@ import {
   questionSchema,
   trimQuestion,
 } from '../types';
-import MultiTextInput from '../../../common/components/MultiTextInput';
-import { postQuestion } from './apiCalls';
-import Link from 'next/link';
+import { postQuestion } from '../apiCalls';
+import MultiTextInput from '@/common/components/MultiTextInput';
 import MarkdownEdit from '@/common/components/MarkdownEdit';
 
 type FormState = Omit<Question, '_id'>;
@@ -22,6 +22,8 @@ const INITIAL_STATE: FormState = {
   tags: [],
   problem: '',
   solution: '',
+  reference: '',
+  isExtension: false,
 };
 const partialFormSchema = questionSchema.partial();
 const formUpdater = (prev: FormState, next: Partial<FormState>) => {
@@ -121,6 +123,14 @@ const QuestionForm = () => {
             ))}
           </select>
         </label>
+        <label>
+          <span>Extension</span>
+          <input
+            type="checkbox"
+            checked={formState.isExtension}
+            onChange={(e) => updateFormState({ isExtension: e.target.checked })}
+          />
+        </label>
         <div>
           <span>Tags</span>
           <MultiTextInput
@@ -133,7 +143,7 @@ const QuestionForm = () => {
             <span>Problem</span>
             <MarkdownEdit
               text={formState.problem}
-              setText={(next) => updateFormState({ problem: next })}
+              setText={(value) => updateFormState({ problem: value })}
             />
           </label>
         </div>
@@ -142,11 +152,21 @@ const QuestionForm = () => {
             <span>Solution</span>
             <MarkdownEdit
               text={formState.solution}
-              setText={(next) => updateFormState({ solution: next })}
+              setText={(value) => updateFormState({ solution: value })}
             />
           </label>
         </div>
-        <button type="submit">Create Question</button>
+        <label>
+          <span>Reference</span>
+          <input
+            type="text"
+            value={formState.reference}
+            onChange={(e) => updateFormState({ reference: e.target.value })}
+          />
+        </label>
+        <div>
+          <button type="submit">Create Question</button>
+        </div>
       </form>
       <div>
         <span>Form status: {statusMessage} </span>
