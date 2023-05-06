@@ -29,8 +29,8 @@ export async function PATCH(req: Request, { params }: { params: Params }) {
     }
 
     const body = await req.json();
-    const questionData = questionSchema.parse({ ...body, _id });
-    await editQuestion(questionData);
+    const questionData = questionSchema.parse({ ...body });
+    await editQuestion({ _id, ...questionData });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
