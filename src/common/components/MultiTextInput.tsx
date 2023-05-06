@@ -1,12 +1,17 @@
 'use client';
 
-import { RefObject, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 type Props<T extends string> = {
+  ariaLabel?: string;
   value: T[];
   setValue: (value: T[]) => void;
 };
-const MultiTextInput = <T extends string>({ value, setValue }: Props<T>) => {
+const MultiTextInput = <T extends string>({
+  value,
+  setValue,
+  ariaLabel = 'item',
+}: Props<T>) => {
   const [newItem, setNewItem] = useState('');
   const refs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -60,6 +65,7 @@ const MultiTextInput = <T extends string>({ value, setValue }: Props<T>) => {
             <span>{index}: </span>
             <input
               type="text"
+              aria-label={`${ariaLabel} ${index}`}
               value={item}
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => {
@@ -73,6 +79,7 @@ const MultiTextInput = <T extends string>({ value, setValue }: Props<T>) => {
           </label>
           <button
             type="button"
+            aria-label={`delete ${ariaLabel} ${index}`}
             onClick={() => handleDelete(index)}
             tabIndex={-1}
           >
@@ -85,12 +92,18 @@ const MultiTextInput = <T extends string>({ value, setValue }: Props<T>) => {
           <span>{value.length}: </span>
           <input
             type="text"
+            aria-label={`new ${ariaLabel}`}
             value={newItem}
             onChange={(e) => setNewItem(e.target.value)}
             onKeyDown={(e) => handlePressEnter(e, true)}
           />
         </label>
-        <button type="button" onClick={handleAdd} tabIndex={-1}>
+        <button
+          type="button"
+          aria-label={`add new ${ariaLabel}`}
+          onClick={handleAdd}
+          tabIndex={-1}
+        >
           +
         </button>
       </div>

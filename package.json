@@ -28,6 +28,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@jest/globals": "^29.5.0",
     "@shelf/jest-mongodb": "^4.1.7",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",

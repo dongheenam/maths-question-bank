@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import { useRouter, redirect } from 'next/navigation';
 
-jest.mock(
-  '../../api/questions/getQuestion',
-  () => (_id: string) =>
-    Promise.resolve({
+jest.mock('../../api/questions/getQuestion', () => (_id: string) => {
+  if (_id === 'existingId') {
+    return Promise.resolve({
       _id,
       topic: 'Number',
       yearLevel: '7',
@@ -12,24 +12,33 @@ jest.mock(
       solution: 'zero',
       reference: 'textbook',
       isExtension: false,
-    })
-);
+    });
+  } else {
+    return Promise.resolve(null);
+  }
+});
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({
     refresh: jest.fn(),
   })),
+  redirect: jest.fn((url: string) => {
+    throw new Error(`redirect called to: ${url}`);
+  }),
 }));
 import Page from './page';
+import { renderAsyncComponent } from '@/common/tests/utils';
 
-it('renders without crashing', async () => {
-  const PageComponent = await Page({ params: { _id: '' } });
-  render(PageComponent);
+const renderPage = async () => {
+  return await renderAsyncComponent(Page, { params: { _id: 'existingId' } });
+};
+
+test('renders without crashing', async () => {
+  await renderPage();
   expect(screen.getByText(/view/i)).toBeTruthy();
 });
 
-it('renders the question', async () => {
-  const PageComponent = await Page({ params: { _id: '123' } });
-  render(PageComponent);
+test('renders the question correctly', async () => {
+  await renderAsyncComponent(Page, { params: { _id: 'existingId' } });
   expect(screen.getByText(/number/i)).toBeTruthy;
   expect(screen.getByText(/7/)).toBeTruthy;
   expect(screen.getByText(/no/i)).toBeTruthy;
@@ -37,4 +46,48 @@ it('renders the question', async () => {
   expect(screen.getByText(/subtracts/i)).toBeTruthy;
   expect(screen.getByText(/what is two plus two/)).toBeTruthy;
   expect(screen.getByText(/zero/)).toBeTruthy;
+});
+
+test('should redirect to /questions if the question does not exist', async () => {
+  try {
+    await renderPage();
+  } catch (error: any) {
+    expect(error.message).toMatch(/redirect called to: \/questions/);
+  }
+  expect(redirect).toBeCalledWith('/questions');
+});
+
+test('should edit question correctly', async () => {
+  await renderPage();
+  fireEvent.click(screen.getByText(/edit question/i));
+  await screen.findByRole('form');
+
+  const topicInput = screen.getByLabelText(/topic/i);
+  const yearLevelInput = screen.getByLabelText(/year/i);
+  const tagsInput = screen.getByLabelText(/tags/i);
+  const problemInput = screen.getByLabelText(/problem/i);
+  const solutionInput = screen.getByLabelText(/solution/i);
+  const referenceInput = screen.getByLabelText(/reference/i);
+  const extensionInput = screen.getByLabelText(/extension/i);
+  const submitButton = screen.getByText(/submit/i);
+
+  expect(topicInput).toHaveValue('Number');
+  expect(yearLevelInput).toHaveValue('7');
+  expect(tagsInput).toHaveValue('adds, subtracts');
+  expect(problemInput).toHaveValue('what is two plus two?');
+  expect(solutionInput).toHaveValue('zero');
+  expect(referenceInput).toHaveValue('textbook');
+  expect(extensionInput).not.toBeChecked();
+
+  await screen.type(topicInput, 'Algebra');
+  await screen.type(yearLevelInput, '8');
+  await screen.type(tagsInput, 'algebra, equations');
+  await screen.type(problemInput, 'what is x?');
+  await screen.type(solutionInput, 'x');
+  await screen.type(referenceInput, 'textbook');
+  await screen.click(extensionInput);
+  await screen.click(submitButton);
+
+  expect(useRouter().refresh).toBeCalled();
+  expect(redirect).toBeCalledWith('/questions');
 });
