@@ -7,7 +7,7 @@ import {
   getByText,
 } from '@testing-library/react';
 import { ObjectId } from 'mongodb';
-import QuestionForm from './QuestionForm';
+import QuestionForm from './QuestionCreateForm';
 
 const getInput = (label: RegExp): HTMLInputElement =>
   screen.getByLabelText(label);

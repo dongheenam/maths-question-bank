@@ -2,9 +2,8 @@ import { Question } from '@/app/questions/types';
 import client, { getCollection } from '@/common/server/mongoClient';
 import { ObjectId } from 'mongodb';
 
-type QuestionData = Omit<Question, '_id'>;
 const createQuestion = async (
-  questionData: QuestionData
+  questionData: Question
 ): Promise<ObjectId | null> => {
   const { tags } = questionData;
   let _id: ObjectId | null = null;

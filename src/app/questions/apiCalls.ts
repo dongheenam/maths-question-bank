@@ -1,10 +1,6 @@
-import { Question } from './types';
+import { Question, QuestionWithId } from './types';
 
-type PostQuestionData = Omit<Question, '_id'>;
-
-export const postQuestion = async (
-  questionData: PostQuestionData
-): Promise<string> => {
+export const postQuestion = async (questionData: Question): Promise<string> => {
   const { topic, yearLevel, tags, problem, solution, reference, isExtension } =
     questionData;
   const response = await fetch('/api/questions', {
@@ -22,18 +18,16 @@ export const postQuestion = async (
       isExtension,
     }),
   });
+  const data = await response.json();
 
   if (!response.ok) {
-    throw new Error("Server error, couldn't post question.");
+    throw new Error(`server error: ${data.error}`);
   }
-  const data = (await response.json()) as { _id: string };
   return data._id;
 };
 
-type PatchQuestionData = Required<Question>;
-
 export const patchQuestion = async (
-  questionData: PatchQuestionData
+  questionData: QuestionWithId
 ): Promise<void> => {
   const {
     _id,
@@ -62,6 +56,7 @@ export const patchQuestion = async (
   });
 
   if (!response.ok) {
-    throw new Error("Server error, couldn't patch question.");
+    const data = await response.json();
+    throw new Error(`server error: ${data.error}`);
   }
 };

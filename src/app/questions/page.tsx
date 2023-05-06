@@ -3,7 +3,11 @@ import { z } from 'zod';
 
 import SearchForm from './SearchForm';
 import queryQuestions from '../api/questions/queryQuestions';
-import { QuestionQuery, QuestionServer, questionQuerySchema } from './types';
+import {
+  QuestionQuery,
+  QuestionWithObjectId,
+  questionQuerySchema,
+} from './types';
 import { redirect } from 'next/navigation';
 import Markdown from '@/common/components/Markdown';
 
@@ -38,7 +42,7 @@ export default async function Page({ searchParams }: Props) {
     }
   }
 
-  let questions: QuestionServer[] = [];
+  let questions: QuestionWithObjectId[] = [];
   try {
     questions = await queryQuestions(query);
   } catch (error) {

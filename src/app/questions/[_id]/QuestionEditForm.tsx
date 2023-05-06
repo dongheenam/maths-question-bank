@@ -11,7 +11,7 @@ import {
   YearLevel,
   questionSchema,
 } from '../types';
-import MultiTextInput from '../../../common/components/MultiTextInput';
+import MultiTextInput from '@/common/components/MultiTextInput';
 import { patchQuestion } from '../apiCalls';
 
 type Props = {
@@ -84,7 +84,7 @@ const EditForm = ({ question }: Props) => {
       <button onClick={() => updateFormStatus({ opened: false })}>
         Close form
       </button>
-      <form onSubmit={handleSubmit}>
+      <form aria-label="form" onSubmit={handleSubmit}>
         <label>
           <span>Topic</span>
           <select

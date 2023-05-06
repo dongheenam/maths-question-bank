@@ -1,12 +1,12 @@
-import { Question } from '@/app/questions/types';
+import { QuestionWithId, QuestionWithObjectId } from '@/app/questions/types';
 import client, { getCollection } from '@/common/server/mongoClient';
 import { ObjectId } from 'mongodb';
 
-type QuestionData = Question & { _id: string | ObjectId };
-
-const editQuestion = async (questionData: QuestionData): Promise<void> => {
-  const { _id, ...questionDataWithoutId } = questionData;
-  const { tags } = questionDataWithoutId;
+const editQuestion = async (
+  questionWithId: QuestionWithId | QuestionWithObjectId
+): Promise<void> => {
+  const { _id, ...question } = questionWithId;
+  const { tags } = question;
   const questionId = new ObjectId(_id);
 
   const session = client.startSession();
@@ -15,7 +15,7 @@ const editQuestion = async (questionData: QuestionData): Promise<void> => {
       const { matchedCount } = await getCollection(
         client,
         'questions'
-      ).updateOne({ _id: questionId }, { $set: questionDataWithoutId });
+      ).updateOne({ _id: questionId }, { $set: question });
       if (matchedCount === 0) {
         throw new Error("Question doesn't exist.");
       }

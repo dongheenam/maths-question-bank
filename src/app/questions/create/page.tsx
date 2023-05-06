@@ -1,5 +1,5 @@
 import { getAuthSession } from '@/common/server/authUtils';
-import QuestionForm from './QuestionForm';
+import QuestionCreateForm from './QuestionCreateForm';
 
 export default async function Page() {
   const session = await getAuthSession();
@@ -7,7 +7,7 @@ export default async function Page() {
   return (
     <main>
       <h1>New question</h1>
-      {session ? <QuestionForm /> : <p>You are not logged in!</p>}
+      {session ? <QuestionCreateForm /> : <p>You are not logged in!</p>}
     </main>
   );
 }

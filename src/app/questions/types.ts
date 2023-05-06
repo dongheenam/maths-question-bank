@@ -18,7 +18,6 @@ const yearSchema = z.enum(YEAR_LEVELS);
 export type YearLevel = z.infer<typeof yearSchema>;
 
 export const questionSchema = z.object({
-  _id: z.string(),
   topic: topicSchema,
   yearLevel: yearSchema,
   tags: z.array(z.string()),
@@ -30,8 +29,9 @@ export const questionSchema = z.object({
 // question fetched from MongoDB has an _id field of type ObjectId
 // which cannot be used client-side
 export type Question = z.infer<typeof questionSchema>;
-export type QuestionServer = Omit<Question, '_id'> & { _id: ObjectId };
-export const trimQuestion = (question: Question): Question => ({
+export type QuestionWithId = Question & { _id: string };
+export type QuestionWithObjectId = Question & { _id: ObjectId };
+export const trimQuestion = (question: Question) => ({
   ...question,
   tags: [...new Set(question.tags.map((tag) => tag.trim().toLowerCase()))],
   problem: question.problem.trim(),

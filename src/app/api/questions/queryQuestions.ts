@@ -2,7 +2,7 @@ import { Filter } from 'mongodb';
 
 import {
   QuestionQuery,
-  QuestionServer,
+  Question,
   questionQuerySchema,
 } from '@/app/questions/types';
 import client, { getCollection } from '@/common/server/mongoClient';
@@ -10,11 +10,8 @@ import client, { getCollection } from '@/common/server/mongoClient';
 const queryQuestions = async (query: QuestionQuery) => {
   const { topic, yearLevel, tags, text, isExtension } =
     questionQuerySchema.parse(query);
-  const questionsCollection = getCollection<QuestionServer>(
-    client,
-    'questions'
-  );
-  const filter: Filter<QuestionServer> = {};
+  const questionsCollection = getCollection<Question>(client, 'questions');
+  const filter: Filter<Question> = {};
 
   if (topic) {
     filter.topic = topic;
